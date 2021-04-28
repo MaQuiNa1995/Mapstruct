@@ -16,9 +16,9 @@ import maquina1995.mapstruct.mapper.BandaMapper;
 @ContextConfiguration(classes = { SpringConfig.class })
 class BandaMapperTest {
 
-	private static final String NOMBRE = "Sic Zone";
+	private static final String NOMBRE = "Unleashed";
 	private static final int NUMERO_INTEGRANTES = 3;
-	private static final String ESTILO = "Groove Metal";
+	private static final String ESTILO = "Death";
 
 	@Autowired
 	private BandaMapper mut;
@@ -27,11 +27,10 @@ class BandaMapperTest {
 	void bandaToBandaDtoTest() {
 
 		// Given
-		Banda banda = Banda.builder()
-		        .nombre(NOMBRE)
-		        .numIntegrantes(NUMERO_INTEGRANTES)
-		        .estilo(ESTILO)
-		        .build();
+		Banda banda = new Banda();
+		banda.setNombre(NOMBRE);
+		banda.setNumIntegrantes(NUMERO_INTEGRANTES);
+		banda.setEstilo(ESTILO);
 
 		// When
 		BandaDto bandaDto = mut.bandaToBandaDto(banda);
@@ -41,7 +40,7 @@ class BandaMapperTest {
 		// los errores de una vez
 		Assertions.assertAll(() -> Assertions.assertEquals(NOMBRE, bandaDto.getNombre()),
 		        () -> Assertions.assertEquals(NUMERO_INTEGRANTES, bandaDto.getNumeroIntegrantes()),
-		        () -> Assertions.assertEquals(ESTILO, bandaDto.getEstiloMetal()));
+		        () -> Assertions.assertEquals(ESTILO + " Metal", bandaDto.getEstiloMetal()));
 
 	}
 
@@ -49,11 +48,10 @@ class BandaMapperTest {
 	void bandaDtoToBandaTest() {
 
 		// Given
-		BandaDto bandaDto = BandaDto.builder()
-		        .nombre(NOMBRE)
-		        .numeroIntegrantes(NUMERO_INTEGRANTES)
-		        .estiloMetal(ESTILO)
-		        .build();
+		BandaDto bandaDto = new BandaDto();
+		bandaDto.setNombre(NOMBRE);
+		bandaDto.setNumeroIntegrantes(NUMERO_INTEGRANTES);
+		bandaDto.setEstiloMetal(ESTILO);
 
 		// When
 		Banda banda = mut.bandaDtoToBanda(bandaDto);
