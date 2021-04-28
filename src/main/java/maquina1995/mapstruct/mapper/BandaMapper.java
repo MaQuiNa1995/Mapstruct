@@ -23,8 +23,6 @@ public interface BandaMapper {
 	 * @param banda {@link Banda} a ser transformada
 	 * @return {@link BandaDto} transformado
 	 */
-//	@Mapping(source = "banda.estilo",
-//	        target = "estiloMetal")
 	@Mapping(source = "banda.numIntegrantes",
 	        target = "numeroIntegrantes")
 	BandaDto bandaToBandaDto(Banda banda);
