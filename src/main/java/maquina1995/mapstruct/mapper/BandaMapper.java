@@ -1,15 +1,26 @@
 package maquina1995.mapstruct.mapper;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.mapstruct.BeforeMapping;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ObjectFactory;
 
 import maquina1995.mapstruct.domain.Banda;
-import maquina1995.mapstruct.domain.BandaDto;
+import maquina1995.mapstruct.domain.musica.AbstractMetal;
+import maquina1995.mapstruct.domain.musica.Black;
+import maquina1995.mapstruct.domain.musica.Death;
+import maquina1995.mapstruct.dto.BandaDto;
+import maquina1995.mapstruct.dto.musica.AbstractMetalDto;
+import maquina1995.mapstruct.dto.musica.BlackDto;
+import maquina1995.mapstruct.dto.musica.DeathDto;
 
-@Mapper(componentModel = "spring")
-public interface BandaMapper {
+@Mapper(uses = { BlackMapper.class, DeathMapper.class })
+public interface BandaMapper extends GenericMapper<Banda, BandaDto> {
 
 	/**
 	 * Método usado para mapear una {@link Banda} a un {@link BandaDto}
@@ -23,9 +34,12 @@ public interface BandaMapper {
 	 * @param banda {@link Banda} a ser transformada
 	 * @return {@link BandaDto} transformado
 	 */
+	@Override
 	@Mapping(source = "banda.numIntegrantes",
 	        target = "numeroIntegrantes")
-	BandaDto bandaToBandaDto(Banda banda);
+	@Mapping(source = "banda.tiposMusica",
+	        target = "estilosMusicaCompleto")
+	BandaDto entityToDto(Banda banda);
 
 	/**
 	 * Método usado para mapear un {@link BandaDto} a una {@link Banda}
@@ -33,11 +47,9 @@ public interface BandaMapper {
 	 * @param bandaDto {@link BandaDto} a ser transformado
 	 * @return {@link Banda} transformada
 	 */
-	@Mapping(source = "bandaDto.estiloMetal",
-	        target = "estilo")
-	@Mapping(source = "bandaDto.numeroIntegrantes",
-	        target = "numIntegrantes")
-	Banda bandaDtoToBanda(BandaDto bandaDto);
+	@Override
+	@InheritInverseConfiguration
+	Banda dtoToEntity(BandaDto bandaDto);
 
 	/**
 	 * {@link org.mapstruct.BeforeMapping} y {@link org.mapstruct.AfterMapping} se
@@ -72,8 +84,52 @@ public interface BandaMapper {
 	 * @param banda
 	 */
 	@BeforeMapping
-	default void addMetalToStyle(Banda banda, @MappingTarget BandaDto bandaDto) {
-		bandaDto.setEstiloMetal(banda.getEstilo() + " Metal");
+	default void metalToString(Banda banda, @MappingTarget BandaDto bandaDto) {
+
+		List<String> tiposMusicaString = banda.getTiposMusica()
+		        .stream()
+		        .map(AbstractMetal::getClass)
+		        .map(Class::getSimpleName)
+		        .collect(Collectors.toList());
+
+		bandaDto.setEstilosNombre(tiposMusicaString);
+	}
+
+	@ObjectFactory
+	default AbstractMetal mapearAbstracto(AbstractMetalDto abstractMetalDto) {
+
+		AbstractMetal metal = null;
+
+		switch (abstractMetalDto.getClass()
+		        .getSimpleName()) {
+		case "BlackDto":
+			metal = new Black();
+			break;
+
+		case "DeathDto":
+			metal = new Death();
+			break;
+		}
+
+		return metal;
+	}
+
+	@ObjectFactory()
+	default AbstractMetalDto mapearAbstractoDto(AbstractMetal abstractMetal) {
+
+		AbstractMetalDto metal = null;
+
+		switch (abstractMetal.getClass()
+		        .getSimpleName()) {
+		case "Black":
+			metal = new BlackDto();
+			break;
+		case "Death":
+			metal = new DeathDto();
+			break;
+		}
+
+		return metal;
 	}
 
 }
