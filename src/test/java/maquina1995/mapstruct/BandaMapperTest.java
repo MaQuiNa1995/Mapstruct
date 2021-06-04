@@ -80,11 +80,10 @@ class BandaMapperTest {
 		BandaDto bandaDto = mut.entityToDto(banda);
 
 		// Then
-		Assertions.assertAll(() -> Assertions.assertEquals(NOMBRE, bandaDto.getNombre()),
-		        () -> Assertions.assertEquals(NUMERO_INTEGRANTES, bandaDto.getNumeroIntegrantes()),
-		        () -> Assertions.assertEquals(estilosMusicaString, bandaDto.getEstilosNombre()),
-		        () -> Assertions.assertEquals(estilosMusicaDto, bandaDto.getEstilosMusicaCompleto()));
-
+		Assertions.assertEquals(NOMBRE, bandaDto.getNombre());
+		Assertions.assertEquals(NUMERO_INTEGRANTES, bandaDto.getNumeroIntegrantes());
+		Assertions.assertEquals(estilosMusicaString, bandaDto.getEstilosNombre());
+		Assertions.assertEquals(estilosMusicaDto, bandaDto.getEstilosMusicaCompleto());
 	}
 
 	@Test
@@ -101,11 +100,10 @@ class BandaMapperTest {
 		Banda banda = mut.dtoToEntity(bandaDto);
 
 		// Then
-
-		Assertions.assertAll(() -> Assertions.assertEquals(NOMBRE, banda.getNombre()),
-		        () -> Assertions.assertEquals(NUMERO_INTEGRANTES, banda.getNumIntegrantes()),
-		        () -> Assertions.assertEquals(estilosMusica, banda.getTiposMusica()),
-		        () -> Assertions.assertEquals(estilosMusicaString, bandaDto.getEstilosNombre()));
+		Assertions.assertEquals(NOMBRE, banda.getNombre());
+		Assertions.assertEquals(NUMERO_INTEGRANTES, banda.getNumIntegrantes());
+		Assertions.assertEquals(estilosMusica, banda.getTiposMusica());
+		Assertions.assertEquals(estilosMusicaString, bandaDto.getEstilosNombre());
 
 	}
 }
