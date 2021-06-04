@@ -94,7 +94,7 @@ class BandaMapperTest {
 		bandaDto.setNombre(NOMBRE);
 		bandaDto.setNumeroIntegrantes(NUMERO_INTEGRANTES);
 		bandaDto.setEstilosNombre(estilosMusicaString);
-		bandaDto.setEstilosMusicaCompleto(null);
+		bandaDto.setEstilosMusicaCompleto(estilosMusicaDto);
 
 		// When
 		Banda banda = mut.dtoToEntity(bandaDto);

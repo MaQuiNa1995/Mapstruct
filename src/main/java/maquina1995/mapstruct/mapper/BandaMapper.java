@@ -8,44 +8,13 @@ import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import maquina1995.mapstruct.domain.Banda;
 import maquina1995.mapstruct.domain.musica.AbstractMetal;
-import maquina1995.mapstruct.domain.musica.Black;
-import maquina1995.mapstruct.domain.musica.Death;
 import maquina1995.mapstruct.dto.BandaDto;
-import maquina1995.mapstruct.dto.musica.AbstractMetalDto;
-import maquina1995.mapstruct.dto.musica.BlackDto;
-import maquina1995.mapstruct.dto.musica.DeathDto;
 
-/**
- * para poder hacer un mapeado polimorfico como todavía mapstruct no cuenta con
- * esta caracteristica hay que hacerlo a mano:
- * <a href="https://github.com/mapstruct/mapstruct/issues/2438">Como se muestra
- * aqui</a>
- * <p>
- * El link de la petición de esta característica es:
- * <a href="https://github.com/mapstruct/mapstruct/issues/131">Esta</a>
- * <p>
- * La propuesta ofrecida en el link es la expuesta en:
- * {@link #polymorphicMapping(AbstractMetal)} y
- * {@link #polymorphicMapping(AbstractMetalDto)}
- * <p>
- * y requiere de hacer el {@link @Autowired} de {@link BlackMapper} y
- * {@link DeathMapper}
- * 
- * @author MaQuiNa1995
- *
- */
-@Mapper
-public abstract class BandaMapper implements GenericMapper<Banda, BandaDto> {
-
-	@Autowired
-	private BlackMapper blackMapper;
-	@Autowired
-	private DeathMapper deathMapper;
+@Mapper(uses = AbstractMetalMapper.class)
+public interface BandaMapper extends GenericMapper<Banda, BandaDto> {
 
 	/**
 	 * Método usado para mapear una {@link Banda} a un {@link BandaDto}
@@ -64,7 +33,7 @@ public abstract class BandaMapper implements GenericMapper<Banda, BandaDto> {
 	        target = "numeroIntegrantes")
 	@Mapping(source = "banda.tiposMusica",
 	        target = "estilosMusicaCompleto")
-	public abstract BandaDto entityToDto(Banda banda);
+	abstract BandaDto entityToDto(Banda banda);
 
 	/**
 	 * Método usado para mapear un {@link BandaDto} a una {@link Banda}
@@ -74,7 +43,7 @@ public abstract class BandaMapper implements GenericMapper<Banda, BandaDto> {
 	 */
 	@Override
 	@InheritInverseConfiguration
-	public abstract Banda dtoToEntity(BandaDto bandaDto);
+	abstract Banda dtoToEntity(BandaDto bandaDto);
 
 	/**
 	 * {@link org.mapstruct.BeforeMapping} y {@link org.mapstruct.AfterMapping} se
@@ -109,7 +78,7 @@ public abstract class BandaMapper implements GenericMapper<Banda, BandaDto> {
 	 * @param banda
 	 */
 	@BeforeMapping
-	protected void metalToString(Banda banda, @MappingTarget BandaDto bandaDto) {
+	default void metalToString(Banda banda, @MappingTarget BandaDto bandaDto) {
 
 		List<String> tiposMusicaString = banda.getTiposMusica()
 		        .stream()
@@ -118,38 +87,6 @@ public abstract class BandaMapper implements GenericMapper<Banda, BandaDto> {
 		        .collect(Collectors.toList());
 
 		bandaDto.setEstilosNombre(tiposMusicaString);
-	}
-
-	@ObjectFactory
-	protected AbstractMetal polymorphicMapping(AbstractMetalDto metalDto) {
-
-		AbstractMetal abstractMetal;
-
-		if (metalDto instanceof BlackDto) {
-			abstractMetal = blackMapper.dtoToEntity((BlackDto) metalDto);
-		} else if (metalDto instanceof DeathDto) {
-			abstractMetal = deathMapper.dtoToEntity((DeathDto) metalDto);
-		} else {
-			throw new IllegalArgumentException(metalDto.getClass()
-			        .getSimpleName() + " Not Allowed");
-		}
-		return abstractMetal;
-	}
-
-	@ObjectFactory
-	protected AbstractMetalDto polymorphicMapping(AbstractMetal metal) {
-
-		AbstractMetalDto abstractMetalDto;
-
-		if (metal instanceof Black) {
-			abstractMetalDto = blackMapper.entityToDto((Black) metal);
-		} else if (metal instanceof Death) {
-			abstractMetalDto = deathMapper.entityToDto((Death) metal);
-		} else {
-			throw new IllegalArgumentException(metal.getClass()
-			        .getSimpleName() + " Not Allowed");
-		}
-		return abstractMetalDto;
 	}
 
 }
